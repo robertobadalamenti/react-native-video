@@ -81,12 +81,18 @@
             // Grab the instance of the IMAAdsManager and set yourself as the delegate.
             adsManager = adsLoadedData.adsManager
             adsManager?.delegate = self
-
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "ADS_MANAGER_LOADED",
+                    "data": ["adCuePoints":adsManager.adCuePoints],
+                    "target": _video.reactTag!
+                ])
+            }
             // Create ads rendering settings and tell the SDK to use the in-app browser.
             let adsRenderingSettings = IMAAdsRenderingSettings()
             adsRenderingSettings.linkOpenerDelegate = self
             adsRenderingSettings.linkOpenerPresentingController = _video.reactViewController()
-
+            adsRenderingSettings.loadVideoTimeout = _video.getLoadVideoTimeout() ?? -1
             adsManager.initialize(with: adsRenderingSettings)
         }
 
@@ -113,25 +119,52 @@
                 }
                 adsManager.start()
             }
+            var combinedAdData = event.adData ?? [:]
+
+              if let adDictionary = self.getAd(ad: event.ad) {
+        
+                  combinedAdData.merge(adDictionary) { (_, new) in new }
+              }
 
             if _video.onReceiveAdEvent != nil {
                 let type = convertEventToString(event: event.type)
-
-                if event.adData != nil {
-                    _video.onReceiveAdEvent?([
-                        "event": type,
-                        "data": event.adData ?? [String](),
-                        "target": _video.reactTag!,
-                    ])
-                } else {
-                    _video.onReceiveAdEvent?([
-                        "event": type,
-                        "target": _video.reactTag!,
-                    ])
-                }
+                _video.onReceiveAdEvent?([
+                    "event": type,
+                    "data": combinedAdData,
+                    "target": _video.reactTag!,
+                ])
+               
             }
         }
+        func getAd(ad: IMAAd?) -> [String: Any]? {
+            guard let _ad = ad else { return nil }
 
+            var adInfo: [String: Any] = [
+                "adId": _ad.adId,
+                "adTitle": _ad.adTitle,
+                "adSystem": _ad.adSystem,
+                "advertiserName": _ad.advertiserName,
+                "contentType": _ad.contentType,
+                "creativeId": _ad.creativeID,
+                "dealId": _ad.dealID,
+                "description": _ad.adDescription ,
+                "duration": _ad.duration,
+                "isLinear": _ad.isLinear,
+                "skipTimeOffset": _ad.skipTimeOffset,
+            ]
+            let adPodInfo = _ad.adPodInfo
+            let podInfo: [String: Any] = [
+                "adPosition": adPodInfo.adPosition,
+                "totalAds": adPodInfo.totalAds,
+                "isBumper": adPodInfo.isBumper,
+                "podIndex": adPodInfo.podIndex,
+                "timeOffset": adPodInfo.timeOffset
+            ]
+            adInfo["adPodInfo"] = podInfo
+          
+
+            return adInfo
+        }
         func adsManager(_: IMAAdsManager, didReceive error: IMAAdError) {
             if error.message != nil {
                 print("AdsManager error: " + error.message!)
@@ -159,12 +192,23 @@
             // Pause the content for the SDK to play ads.
             _video?.setPaused(true)
             _video?.setAdPlaying(true)
+            if _video?.onReceiveAdEvent != nil {
+                _video?.onReceiveAdEvent?([
+                    "event": "CONTENT_PAUSE_REQUESTED",
+                ])
+            }
+
         }
 
         func adsManagerDidRequestContentResume(_: IMAAdsManager) {
             // Resume the content since the SDK is done playing ads (at least for now).
             _video?.setAdPlaying(false)
             _video?.setPaused(false)
+            if _video?.onReceiveAdEvent != nil {
+                _video?.onReceiveAdEvent?([
+                    "event": "CONTENT_RESUME_REQUESTED",
+                ])
+            }
         }
 
         // MARK: - IMALinkOpenerDelegate
@@ -219,6 +263,10 @@
                 result = "TAPPED"
             case .THIRD_QUARTILE:
                 result = "THIRD_QUARTILE"
+            case .ICON_TAPPED:
+                result = "ICON_TAPPED"
+            case .ICON_FALLBACK_IMAGE_CLOSED:
+                result = "ICON_FALLBACK_IMAGE_CLOSED"
             default:
                 result = "UNKNOWN"
             }

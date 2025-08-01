@@ -576,9 +576,17 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
             if #available(iOS 15.0, *) {
                 if _playInBackground {
-                    _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
+                    if #available(tvOS 15.0, *) {
+                        _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
+                    } else {
+                        // Fallback on earlier versions
+                    }
                 } else {
-                    _player!.audiovisualBackgroundPlaybackPolicy = .automatic
+                    if #available(tvOS 15.0, *) {
+                        _player!.audiovisualBackgroundPlaybackPolicy = .automatic
+                    } else {
+                        // Fallback on earlier versions
+                    }
                 }
             }
 
@@ -603,9 +611,17 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
             if #available(iOS 15.0, *) {
                 if _playInBackground {
-                    _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
+                    if #available(tvOS 15.0, *) {
+                        _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
+                    } else {
+                        // Fallback on earlier versions
+                    }
                 } else {
-                    _player!.audiovisualBackgroundPlaybackPolicy = .automatic
+                    if #available(tvOS 15.0, *) {
+                        _player!.audiovisualBackgroundPlaybackPolicy = .automatic
+                    } else {
+                        // Fallback on earlier versions
+                    }
                 }
             }
             // later we can just call "updateNowPlayingInfo:
@@ -1355,6 +1371,11 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     func getAdTagUrl() -> String? {
         return _source?.adParams.adTagUrl
     }
+    
+    func getLoadVideoTimeout() -> Double? {
+        return _source?.adParams.loadVideoTimeout
+    }
+
 
     #if USE_GOOGLE_IMA
         func getContentPlayhead() -> IMAAVPlayerContentPlayhead? {

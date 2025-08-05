@@ -40,6 +40,7 @@
 
             let adTagUrl = _video.getAdTagUrl()
             let contentPlayhead = _video.getContentPlayhead()
+            let vastLoadTimeout = _video.getVastLoadTimeout()
 
             if adTagUrl != nil && contentPlayhead != nil {
                 // Create an ad request with our ad tag, display container, and optional user context.
@@ -47,7 +48,8 @@
                     adTagUrl: adTagUrl!,
                     adDisplayContainer: adDisplayContainer,
                     contentPlayhead: contentPlayhead,
-                    userContext: nil
+                    userContext: nil,
+                    vastLoadTimeout: vastLoadTimeout
                 )
 
                 adsLoader.requestAds(with: request)
@@ -212,7 +214,8 @@
             // Fall back to playing content
             _video.setPaused(false)
         }
-        func adsManagerAdPlaybackReady(_ adsManager: IMAAdsManager) {
+
+        func adsManagerAdPlaybackReady(_: IMAAdsManager) {
             guard let _video else { return }
 
             if _video.onReceiveAdEvent != nil {
@@ -222,7 +225,8 @@
                 ])
             }
         }
-        func adsManagerAdDidStartBuffering(_ adsManager: IMAAdsManager) {
+
+        func adsManagerAdDidStartBuffering(_: IMAAdsManager) {
             guard let _video else { return }
 
             if _video.onReceiveAdEvent != nil {

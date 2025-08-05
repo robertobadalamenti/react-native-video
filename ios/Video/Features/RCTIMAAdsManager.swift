@@ -84,8 +84,8 @@
             if _video.onReceiveAdEvent != nil {
                 _video.onReceiveAdEvent?([
                     "event": "ADS_MANAGER_LOADED",
-                    "data": ["adCuePoints":adsManager.adCuePoints],
-                    "target": _video.reactTag!
+                    "data": ["adCuePoints": adsManager.adCuePoints],
+                    "target": _video.reactTag!,
                 ])
             }
             // Create ads rendering settings and tell the SDK to use the in-app browser.
@@ -121,10 +121,9 @@
             }
             var combinedAdData = event.adData ?? [:]
 
-              if let adDictionary = self.getAd(ad: event.ad) {
-        
-                  combinedAdData.merge(adDictionary) { (_, new) in new }
-              }
+            if let adDictionary = self.getAd(ad: event.ad) {
+                combinedAdData.merge(adDictionary) { _, new in new }
+            }
 
             if _video.onReceiveAdEvent != nil {
                 let type = convertEventToString(event: event.type)
@@ -133,9 +132,9 @@
                     "data": combinedAdData,
                     "target": _video.reactTag!,
                 ])
-               
             }
         }
+
         func getAd(ad: IMAAd?) -> [String: Any]? {
             guard let _ad = ad else { return nil }
 
@@ -147,7 +146,7 @@
                 "contentType": _ad.contentType,
                 "creativeId": _ad.creativeID,
                 "dealId": _ad.dealID,
-                "description": _ad.adDescription ,
+                "description": _ad.adDescription,
                 "duration": _ad.duration,
                 "isLinear": _ad.isLinear,
                 "skipTimeOffset": _ad.skipTimeOffset,
@@ -158,13 +157,27 @@
                 "totalAds": adPodInfo.totalAds,
                 "isBumper": adPodInfo.isBumper,
                 "podIndex": adPodInfo.podIndex,
-                "timeOffset": adPodInfo.timeOffset
+                "timeOffset": adPodInfo.timeOffset,
             ]
             adInfo["adPodInfo"] = podInfo
-          
 
             return adInfo
         }
+
+        func adsManager(_: IMAAdsManager, adDidProgressToTime mediaTime: TimeInterval, totalTime: TimeInterval) {
+            guard let _video else { return }
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "AD_PROGRESS",
+                    "data": [
+                        "mediaTime": mediaTime,
+                        "totalTime": totalTime,
+                    ],
+                    "target": _video.reactTag!,
+                ])
+            }
+        }
+
         func adsManager(_: IMAAdsManager, didReceive error: IMAAdError) {
             if error.message != nil {
                 print("AdsManager error: " + error.message!)
@@ -197,7 +210,6 @@
                     "event": "CONTENT_PAUSE_REQUESTED",
                 ])
             }
-
         }
 
         func adsManagerDidRequestContentResume(_: IMAAdsManager) {

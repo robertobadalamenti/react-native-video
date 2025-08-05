@@ -1371,11 +1371,10 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     func getAdTagUrl() -> String? {
         return _source?.adParams.adTagUrl
     }
-    
+
     func getLoadVideoTimeout() -> Double? {
         return _source?.adParams.loadVideoTimeout
     }
-
 
     #if USE_GOOGLE_IMA
         func getContentPlayhead() -> IMAAVPlayerContentPlayhead? {

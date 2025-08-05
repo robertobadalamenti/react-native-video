@@ -576,17 +576,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
             if #available(iOS 15.0, *) {
                 if _playInBackground {
-                    if #available(tvOS 15.0, *) {
-                        _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
-                    } else {
-                        // Fallback on earlier versions
-                    }
+                    _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
                 } else {
-                    if #available(tvOS 15.0, *) {
-                        _player!.audiovisualBackgroundPlaybackPolicy = .automatic
-                    } else {
-                        // Fallback on earlier versions
-                    }
+                    _player!.audiovisualBackgroundPlaybackPolicy = .automatic
                 }
             }
 
@@ -611,17 +603,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
             if #available(iOS 15.0, *) {
                 if _playInBackground {
-                    if #available(tvOS 15.0, *) {
-                        _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
-                    } else {
-                        // Fallback on earlier versions
-                    }
+                    _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
                 } else {
-                    if #available(tvOS 15.0, *) {
-                        _player!.audiovisualBackgroundPlaybackPolicy = .automatic
-                    } else {
-                        // Fallback on earlier versions
-                    }
+                    _player!.audiovisualBackgroundPlaybackPolicy = .automatic
                 }
             }
             // later we can just call "updateNowPlayingInfo:

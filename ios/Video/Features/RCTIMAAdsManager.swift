@@ -212,6 +212,26 @@
             // Fall back to playing content
             _video.setPaused(false)
         }
+        func adsManagerAdPlaybackReady(_ adsManager: IMAAdsManager) {
+            guard let _video else { return }
+
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "AD_CAN_PLAY",
+                    "target": _video.reactTag!,
+                ])
+            }
+        }
+        func adsManagerAdDidStartBuffering(_ adsManager: IMAAdsManager) {
+            guard let _video else { return }
+
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "AD_BUFFERING",
+                    "target": _video.reactTag!,
+                ])
+            }
+        }
 
         func adsManagerDidRequestContentPause(_: IMAAdsManager) {
             // Pause the content for the SDK to play ads.

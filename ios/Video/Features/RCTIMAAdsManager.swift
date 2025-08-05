@@ -102,6 +102,18 @@
             }
 
             _video?.setPaused(false)
+            guard let _video else { return }
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "ERROR",
+                    "data": [
+                        "message": adErrorData.adError.message ?? "unknown",
+                        "code": adErrorData.adError.code,
+                        "type": adErrorData.adError.type,
+                    ],
+                    "target": _video.reactTag!,
+                ])
+            }
         }
 
         // MARK: - IMAAdsManagerDelegate

@@ -49,8 +49,10 @@
                     adDisplayContainer: adDisplayContainer,
                     contentPlayhead: contentPlayhead,
                     userContext: nil,
-                    vastLoadTimeout: vastLoadTimeout
                 )
+                if let vastTimeout = vastLoadTimeout {
+                    request.vastLoadTimeout = Float(vastTimeout)
+                }
 
                 adsLoader.requestAds(with: request)
             }

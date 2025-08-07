@@ -273,10 +273,10 @@
             var result = "UNKNOWN"
 
             switch event {
-            case .AD_BREAK_READY:
-                result = "AD_BREAK_READY"
             case .AD_BREAK_ENDED:
                 result = "AD_BREAK_ENDED"
+            case .AD_BREAK_READY:
+                result = "AD_BREAK_READY"
             case .AD_BREAK_STARTED:
                 result = "AD_BREAK_STARTED"
             case .AD_PERIOD_ENDED:
@@ -293,6 +293,10 @@
                 result = "CUEPOINTS_CHANGED"
             case .FIRST_QUARTILE:
                 result = "FIRST_QUARTILE"
+            case .ICON_FALLBACK_IMAGE_CLOSED:
+                result = "ICON_FALLBACK_IMAGE_CLOSED"
+            case .ICON_TAPPED:
+                result = "ICON_TAPPED"
             case .LOADED:
                 result = "LOADED"
             case .LOG:
@@ -313,10 +317,6 @@
                 result = "TAPPED"
             case .THIRD_QUARTILE:
                 result = "THIRD_QUARTILE"
-            case .ICON_TAPPED:
-                result = "ICON_TAPPED"
-            case .ICON_FALLBACK_IMAGE_CLOSED:
-                result = "ICON_FALLBACK_IMAGE_CLOSED"
             default:
                 result = "UNKNOWN"
             }

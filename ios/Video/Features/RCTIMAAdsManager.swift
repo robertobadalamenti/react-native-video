@@ -40,7 +40,6 @@
 
             let adTagUrl = _video.getAdTagUrl()
             let contentPlayhead = _video.getContentPlayhead()
-            let vastLoadTimeout = _video.getVastLoadTimeout()
 
             if adTagUrl != nil && contentPlayhead != nil {
                 // Create an ad request with our ad tag, display container, and optional user context.
@@ -50,8 +49,8 @@
                     contentPlayhead: contentPlayhead,
                     userContext: nil,
                 )
-                if let vastTimeout = vastLoadTimeout {
-                    request.vastLoadTimeout = Float(vastTimeout)
+                if let _vastLoadTimeout = _video.getVastLoadTimeout() {
+                    request.vastLoadTimeout = Float(_vastLoadTimeout)
                 }
 
                 adsLoader.requestAds(with: request)
@@ -96,7 +95,9 @@
             let adsRenderingSettings = IMAAdsRenderingSettings()
             adsRenderingSettings.linkOpenerDelegate = self
             adsRenderingSettings.linkOpenerPresentingController = _video.reactViewController()
-            adsRenderingSettings.loadVideoTimeout = _video.getLoadVideoTimeout() ?? -1
+            if let _loadVideoTimeout = _video.getLoadVideoTimeout() {
+                adsRenderingSettings.loadVideoTimeout = _loadVideoTimeout
+            }
             adsManager.initialize(with: adsRenderingSettings)
         }
 

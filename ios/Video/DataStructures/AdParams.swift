@@ -1,6 +1,8 @@
 public struct AdParams {
     let adTagUrl: String?
     let adLanguage: String?
+    let loadVideoTimeout: Double?
+    let vastLoadTimeout: Double?
 
     let json: NSDictionary?
 
@@ -9,10 +11,14 @@ public struct AdParams {
             self.json = nil
             adTagUrl = nil
             adLanguage = nil
+            loadVideoTimeout = nil
+            vastLoadTimeout = nil
             return
         }
         self.json = json
         adTagUrl = json["adTagUrl"] as? String
         adLanguage = json["adLanguage"] as? String
+        loadVideoTimeout = json["loadVideoTimeout"] as? Double
+        vastLoadTimeout = json["vastLoadTimeout"] as? Double
     }
 }

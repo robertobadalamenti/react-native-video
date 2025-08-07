@@ -1356,6 +1356,14 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         return _source?.adParams.adTagUrl
     }
 
+    func getLoadVideoTimeout() -> Double? {
+        return _source?.adParams.loadVideoTimeout
+    }
+
+    func getVastLoadTimeout() -> Double? {
+        return _source?.adParams.vastLoadTimeout
+    }
+
     #if USE_GOOGLE_IMA
         func getContentPlayhead() -> IMAAVPlayerContentPlayhead? {
             return _contentPlayhead

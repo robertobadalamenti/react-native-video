@@ -47,8 +47,11 @@
                     adTagUrl: adTagUrl!,
                     adDisplayContainer: adDisplayContainer,
                     contentPlayhead: contentPlayhead,
-                    userContext: nil
+                    userContext: nil,
                 )
+                if let _vastLoadTimeout = _video.getVastLoadTimeout() {
+                    request.vastLoadTimeout = Float(_vastLoadTimeout)
+                }
 
                 adsLoader.requestAds(with: request)
             }
@@ -81,12 +84,20 @@
             // Grab the instance of the IMAAdsManager and set yourself as the delegate.
             adsManager = adsLoadedData.adsManager
             adsManager?.delegate = self
-
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "ADS_MANAGER_LOADED",
+                    "data": ["adCuePoints": adsManager.adCuePoints],
+                    "target": _video.reactTag!,
+                ])
+            }
             // Create ads rendering settings and tell the SDK to use the in-app browser.
             let adsRenderingSettings = IMAAdsRenderingSettings()
             adsRenderingSettings.linkOpenerDelegate = self
             adsRenderingSettings.linkOpenerPresentingController = _video.reactViewController()
-
+            if let _loadVideoTimeout = _video.getLoadVideoTimeout() {
+                adsRenderingSettings.loadVideoTimeout = _loadVideoTimeout
+            }
             adsManager.initialize(with: adsRenderingSettings)
         }
 
@@ -95,7 +106,19 @@
                 print("Error loading ads: " + adErrorData.adError.message!)
             }
 
-            _video?.setPaused(false)
+            guard let _video else { return }
+            _video.setPaused(false)
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "ERROR",
+                    "data": [
+                        "message": adErrorData.adError.message ?? "unknown",
+                        "code": adErrorData.adError.code,
+                        "type": adErrorData.adError.type,
+                    ],
+                    "target": _video.reactTag!,
+                ])
+            }
         }
 
         // MARK: - IMAAdsManagerDelegate
@@ -113,22 +136,74 @@
                 }
                 adsManager.start()
             }
+            var combinedAdData = event.adData ?? [:]
+
+            if let adDictionary = self.getAd(ad: event.ad) {
+                combinedAdData.merge(adDictionary) { _, new in new }
+            }
 
             if _video.onReceiveAdEvent != nil {
                 let type = convertEventToString(event: event.type)
+                _video.onReceiveAdEvent?([
+                    "event": type,
+                    "data": combinedAdData,
+                    "target": _video.reactTag!,
+                ])
+            }
+        }
 
-                if event.adData != nil {
-                    _video.onReceiveAdEvent?([
-                        "event": type,
-                        "data": event.adData ?? [String](),
-                        "target": _video.reactTag!,
-                    ])
-                } else {
-                    _video.onReceiveAdEvent?([
-                        "event": type,
-                        "target": _video.reactTag!,
-                    ])
-                }
+        func getAd(ad: IMAAd?) -> [String: Any]? {
+            guard let _ad = ad else { return nil }
+
+            var adInfo: [String: Any] = [
+                "adDescription": _ad.adDescription,
+                "adId": _ad.adId,
+                "adSystem": _ad.adSystem,
+                "adTitle": _ad.adTitle,
+                "advertiserName": _ad.advertiserName,
+                "contentType": _ad.contentType,
+                "creativeAdId": _ad.creativeAdID,
+                "creativeId": _ad.creativeID,
+                "dealId": _ad.dealID,
+                "duration": _ad.duration,
+                "height": _ad.height,
+                "isLinear": _ad.isLinear,
+                "isSkippable": _ad.isSkippable,
+                "isUiDisabled": _ad.isUiDisabled,
+                "skipTimeOffset": _ad.skipTimeOffset,
+                "surveyURL": _ad.surveyURL as Any,
+                "traffickingParameters": _ad.traffickingParameters,
+                "vastMediaBitrate": _ad.vastMediaBitrate,
+                "vastMediaHeight": _ad.vastMediaHeight,
+                "vastMediaWidth": _ad.vastMediaWidth,
+                "width": _ad.width,
+                "wrapperAdIDs": _ad.wrapperAdIDs,
+                "wrapperCreativeIDs": _ad.wrapperCreativeIDs,
+                "wrapperSystems": _ad.wrapperSystems,
+            ]
+            let podInfo: [String: Any] = [
+                "adPosition": _ad.adPodInfo.adPosition,
+                "totalAds": _ad.adPodInfo.totalAds,
+                "isBumper": _ad.adPodInfo.isBumper,
+                "podIndex": _ad.adPodInfo.podIndex,
+                "timeOffset": _ad.adPodInfo.timeOffset,
+            ]
+            adInfo["adPodInfo"] = podInfo
+
+            return adInfo
+        }
+
+        func adsManager(_: IMAAdsManager, adDidProgressToTime mediaTime: TimeInterval, totalTime: TimeInterval) {
+            guard let _video else { return }
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "AD_PROGRESS",
+                    "data": [
+                        "mediaTime": mediaTime,
+                        "totalTime": totalTime,
+                    ],
+                    "target": _video.reactTag!,
+                ])
             }
         }
 
@@ -155,16 +230,50 @@
             _video.setPaused(false)
         }
 
+        func adsManagerAdPlaybackReady(_: IMAAdsManager) {
+            guard let _video else { return }
+
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "AD_CAN_PLAY",
+                    "target": _video.reactTag!,
+                ])
+            }
+        }
+
+        func adsManagerAdDidStartBuffering(_: IMAAdsManager) {
+            guard let _video else { return }
+
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "AD_BUFFERING",
+                    "target": _video.reactTag!,
+                ])
+            }
+        }
+
         func adsManagerDidRequestContentPause(_: IMAAdsManager) {
+            guard let _video else { return }
             // Pause the content for the SDK to play ads.
-            _video?.setPaused(true)
-            _video?.setAdPlaying(true)
+            _video.setPaused(true)
+            _video.setAdPlaying(true)
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "CONTENT_PAUSE_REQUESTED",
+                ])
+            }
         }
 
         func adsManagerDidRequestContentResume(_: IMAAdsManager) {
+            guard let _video else { return }
             // Resume the content since the SDK is done playing ads (at least for now).
-            _video?.setAdPlaying(false)
-            _video?.setPaused(false)
+            _video.setAdPlaying(false)
+            _video.setPaused(false)
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "CONTENT_RESUME_REQUESTED",
+                ])
+            }
         }
 
         // MARK: - IMALinkOpenerDelegate
@@ -179,10 +288,10 @@
             var result = "UNKNOWN"
 
             switch event {
-            case .AD_BREAK_READY:
-                result = "AD_BREAK_READY"
             case .AD_BREAK_ENDED:
                 result = "AD_BREAK_ENDED"
+            case .AD_BREAK_READY:
+                result = "AD_BREAK_READY"
             case .AD_BREAK_STARTED:
                 result = "AD_BREAK_STARTED"
             case .AD_PERIOD_ENDED:
@@ -199,6 +308,10 @@
                 result = "CUEPOINTS_CHANGED"
             case .FIRST_QUARTILE:
                 result = "FIRST_QUARTILE"
+            case .ICON_FALLBACK_IMAGE_CLOSED:
+                result = "ICON_FALLBACK_IMAGE_CLOSED"
+            case .ICON_TAPPED:
+                result = "ICON_TAPPED"
             case .LOADED:
                 result = "LOADED"
             case .LOG:

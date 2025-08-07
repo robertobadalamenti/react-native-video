@@ -11,7 +11,8 @@ To use AVOD (Ad-Supported Video on Demand), pass the `adTagUrl` prop to the `Vid
 #### Example:
 
 ```jsx
-adTagUrl="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostoptimizedpodbumper&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
+adTagUrl =
+  'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostoptimizedpodbumper&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator=';
 ```
 
 > **Note:** Video ads cannot start when Picture-in-Picture (PiP) mode is active on iOS. More details are available in the [Google IMA SDK Docs](https://developers.google.com/interactive-media-ads/docs/sdks/ios/client-side/picture_in_picture?hl=en#starting_ads). If you are using custom controls, hide the PiP button when receiving the `STARTED` event from `onReceiveAdEvent` and show it again when receiving the `ALL_ADS_COMPLETED` event.
@@ -39,5 +40,29 @@ To change the language of the IMA SDK, pass the `adLanguage` prop to the `Video`
 ```jsx
 ...
 adLanguage="fr"
+...
+```
+
+### loadVideoTimeout
+
+Timeout (in seconds) when loading a video ad media file. If loading takes longer than this timeout, the ad playback is canceled and the next ad in the pod plays, if available. Use -1 for the default of 8 seconds.
+
+#### Example:
+
+```jsx
+...
+loadVideoTimeout=5
+...
+```
+
+### vastLoadTimeout
+
+Specifies the VAST load timeout in milliseconds for the initial request and any subsequent wrappers. This parameter is optional and will override the default timeout.
+
+#### Example:
+
+```jsx
+...
+vastLoadTimeout=5000
 ...
 ```

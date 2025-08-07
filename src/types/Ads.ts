@@ -72,6 +72,14 @@ export enum AdEvent {
    */
   FIRST_QUARTILE = 'FIRST_QUARTILE',
   /**
+   * The user has tapped an ad icon. On iOS, the SDK will navigate to the landing page. On tvOS, the SDK will present a modal dialog containing the VAST icon fallback image.
+   */
+  ICON_TAPPED = 'ICON_TAPPED',
+  /**
+   * The user has closed the icon fallback image dialog. This may be a good time to resume ad playback, which the SDK autopaused on icon tap. This event only fires for tvOS.
+   */
+  ICON_FALLBACK_IMAGE_CLOSED = 'ICON_FALLBACK_IMAGE_CLOSED',
+  /**
    * Android only: Fires when the impression URL has been pinged.
    */
   IMPRESSION = 'IMPRESSION',

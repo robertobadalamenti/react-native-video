@@ -155,25 +155,37 @@
             guard let _ad = ad else { return nil }
 
             var adInfo: [String: Any] = [
+                "adDescription": _ad.adDescription,
                 "adId": _ad.adId,
-                "adTitle": _ad.adTitle,
                 "adSystem": _ad.adSystem,
+                "adTitle": _ad.adTitle,
                 "advertiserName": _ad.advertiserName,
                 "contentType": _ad.contentType,
+                "creativeAdId": _ad.creativeAdID,
                 "creativeId": _ad.creativeID,
                 "dealId": _ad.dealID,
-                "description": _ad.adDescription,
                 "duration": _ad.duration,
+                "height": _ad.height,
                 "isLinear": _ad.isLinear,
+                "isSkippable": _ad.isSkippable,
+                "isUiDisabled": _ad.isUiDisabled,
                 "skipTimeOffset": _ad.skipTimeOffset,
+                "surveyURL": _ad.surveyURL as Any,
+                "traffickingParameters": _ad.traffickingParameters,
+                "vastMediaBitrate": _ad.vastMediaBitrate,
+                "vastMediaHeight": _ad.vastMediaHeight,
+                "vastMediaWidth": _ad.vastMediaWidth,
+                "width": _ad.width,
+                "wrapperAdIDs": _ad.wrapperAdIDs,
+                "wrapperCreativeIDs": _ad.wrapperCreativeIDs,
+                "wrapperSystems": _ad.wrapperSystems,
             ]
-            let adPodInfo = _ad.adPodInfo
             let podInfo: [String: Any] = [
-                "adPosition": adPodInfo.adPosition,
-                "totalAds": adPodInfo.totalAds,
-                "isBumper": adPodInfo.isBumper,
-                "podIndex": adPodInfo.podIndex,
-                "timeOffset": adPodInfo.timeOffset,
+                "adPosition": _ad.adPodInfo.adPosition,
+                "totalAds": _ad.adPodInfo.totalAds,
+                "isBumper": _ad.adPodInfo.isBumper,
+                "podIndex": _ad.adPodInfo.podIndex,
+                "timeOffset": _ad.adPodInfo.timeOffset,
             ]
             adInfo["adPodInfo"] = podInfo
 

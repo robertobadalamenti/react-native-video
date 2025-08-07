@@ -106,8 +106,8 @@
                 print("Error loading ads: " + adErrorData.adError.message!)
             }
 
-            _video?.setPaused(false)
             guard let _video else { return }
+            _video.setPaused(false)
             if _video.onReceiveAdEvent != nil {
                 _video.onReceiveAdEvent?([
                     "event": "ERROR",
@@ -253,22 +253,24 @@
         }
 
         func adsManagerDidRequestContentPause(_: IMAAdsManager) {
+            guard let _video else { return }
             // Pause the content for the SDK to play ads.
-            _video?.setPaused(true)
-            _video?.setAdPlaying(true)
-            if _video?.onReceiveAdEvent != nil {
-                _video?.onReceiveAdEvent?([
+            _video.setPaused(true)
+            _video.setAdPlaying(true)
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
                     "event": "CONTENT_PAUSE_REQUESTED",
                 ])
             }
         }
 
         func adsManagerDidRequestContentResume(_: IMAAdsManager) {
+            guard let _video else { return }
             // Resume the content since the SDK is done playing ads (at least for now).
-            _video?.setAdPlaying(false)
-            _video?.setPaused(false)
-            if _video?.onReceiveAdEvent != nil {
-                _video?.onReceiveAdEvent?([
+            _video.setAdPlaying(false)
+            _video.setPaused(false)
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
                     "event": "CONTENT_RESUME_REQUESTED",
                 ])
             }

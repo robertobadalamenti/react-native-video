@@ -574,7 +574,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
             _player!.replaceCurrentItem(with: playerItem)
 
-            if #available(iOS 15.0, *) {
+            if #available(iOS 15.0, tvOS 15.0, *) {
                 if _playInBackground {
                     _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
                 } else {
@@ -601,7 +601,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                 }
             #endif
 
-            if #available(iOS 15.0, *) {
+            if #available(iOS 15.0, tvOS 15.0, *) {
                 if _playInBackground {
                     _player!.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
                 } else {

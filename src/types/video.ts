@@ -80,6 +80,8 @@ export enum DRMType {
 export type AdConfig = Readonly<{
   adTagUrl?: string;
   adLanguage?: ISO639_1;
+  loadVideoTimeout?: number;
+  vastLoadTimeout?: number;
 }>;
 
 export type Drm = Readonly<{
